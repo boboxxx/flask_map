@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time GPS Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div id="map" style="height:1000px;"></div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var marker = L.marker([0, 0]).addTo(map);
+        //地图中心为伦敦,标记一个点
+        var london = L.latLng(39.898457, 116.391844);
+        // var london = L.latLng(39.916611, 116.390748);
+
+        var zoom = 13;
+        map.setView(london, zoom); 
+        var marker = L.marker(london).addTo(map);
+        var polyline = L.polyline([], {color: 'red'}).addTo(map);
+        var latlngs = [
+        [39.898457, 116.391844],
+        [39.898595, 116.377947],
+        [39.898341, 116.368001],
+        [39.898063, 116.357144],
+        [39.899095, 116.351934],
+        [39.905871, 116.350670],
+        [39.922329, 116.349800],
+        [39.931017, 116.349671],
+        [39.939104, 116.349225],
+        [39.942233, 116.349910],
+        [39.947263, 116.366892],
+        [39.947568, 116.387537],
+        [39.947764, 116.401988],
+        [39.947929, 116.410824],
+        [39.947558, 116.426740],
+        [39.939700, 116.427338],
+        [39.932404, 116.427919],
+        [39.923109, 116.428377],
+        [39.907094, 116.429583],
+        [39.906858, 116.414040],
+        [39.906622, 116.405321],
+        [39.906324, 116.394954],
+        [39.906308, 116.391264],
+        [39.916611, 116.390748]
+    ];
+        var count = 0;
+        var timer = setInterval(function() {
+            // 每隔一秒增加一个点
+            polyline.addLatLng(latlngs[count]);
+            count++;
+
+            // 延长画线
+            polyline.redraw();
+        }, 100);
+        // 定义计数器和定时器
+        // var count = 0;
+        // var timer = setInterval(function() {
+        //     // 每隔一秒增加一个点
+        //     polyline.addLatLng([51.505 + count * 0.001, -0.09 - count * 0.001]);
+        //     count++;
+
+        //     // 延长画线
+        //     polyline.redraw();
+        // }, 1000);
+        
+        
+    //     const socket = new WebSocket('ws://localhost:8000');
+    //     // 连接成功时的回调函数
+    //     socket.onopen = function() {
+    //     console.log('WebSocket连接成功')
+    //     // 发送数据到后端
+    //     socket.send('Hello, Backend！ ');
+    // };
+    //         // 接收后端数据时的回调函数
+    //     socket.onmessage = functionCevent){
+    //     const data = event.data
+    //     console.log('接收到后端数据：',data);
+    //     //进行相应的处理
+    // };
+    //     // 连接关闭时的回调函数
+    //     socket.onclose = function(){
+    //     console. log('WebSocket连接关闭');
+        // var marker = L.marker(london).addTo(map);
+        // var polyline = L.polyline([]).addTo(map);
+
+        // var socket = new WebSocket('ws://your-c-program-server'); // 替换为实际的WebSocket服务器地址
+
+        // socket.onmessage = function(event) {
+        //     var data = event.data.split(',');
+        //     var latitude = parseFloat(data[0]);
+        //     var longitude = parseFloat(data[1]);
+
+        //     // 更新车辆位置
+        //     updateVehiclePosition(latitude, longitude);
+        // };
+
+        // function updateVehiclePosition(latitude, longitude) {
+        //     // 添加新的轨迹点
+        //     var point = L.latLng(latitude, longitude);
+        //     polyline.addLatLng(point);
+        // }
+    </script>
+</body>
+</html>
