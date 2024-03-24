@@ -1,14 +1,24 @@
 # server.py
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO
-import threading
-import time
+from time import time
+
 
 app = Flask(__name__)
 socket_io = SocketIO(app, cors_allowed_origins="*")
 
-# 初始坐标
-car1_coordinates = [
+@app.route('/data', methods=['POST'])
+def receive_data():
+    # 获取JSON数据
+    data = request.get_json()
+    # 打印接收到的数据
+    print(data)
+    # 可以在这里添加数据处理逻辑
+    # ...
+    # 返回成功响应
+    return jsonify({'status': 'success'}), 200
+
+car1 = [
     {"latitude": 39.898457, "longitude": 116.391844},
     {"latitude": 39.898595, "longitude": 116.377947},
     {"latitude": 39.898341, "longitude": 116.368001},
@@ -21,35 +31,55 @@ car1_coordinates = [
     {"latitude": 39.942233, "longitude": 116.34991},
     {"latitude": 39.947263, "longitude": 116.366892},
     {"latitude": 39.947568, "longitude": 116.387537}
-]
+  ]
 
-# 生成新坐标的函数
-def generate_coordinates(interval, car_id):
+car2 =  [
+    {"latitude": 39.947764, "longitude": 116.401988},
+    {"latitude": 39.947929, "longitude": 116.410824},
+    {"latitude": 39.947558, "longitude": 116.42674},
+    {"latitude": 39.9397, "longitude": 116.427338},
+    {"latitude": 39.932404, "longitude": 116.427919},
+    {"latitude": 39.923109, "longitude": 116.428377},
+    {"latitude": 39.907094, "longitude": 116.429583},
+    {"latitude": 39.906858, "longitude": 116.41404},
+    {"latitude": 39.906622, "longitude": 116.405321},
+    {"latitude": 39.906324, "longitude": 116.394954},
+    {"latitude": 39.906308, "longitude": 116.391264},
+    {"latitude": 39.916611, "longitude": 116.390748}
+  ]
+
+
+
+
+
+def send_data():
+    i = 0 
     while True:
-        time.sleep(interval)
-        # 生成新的 GPS 坐标，此处仅做示例，您需要根据具体需求生成新坐标
-        new_latitude = car1_coordinates[-1]["latitude"] + 0.001  # 示例：每次增加0.001
-        new_longitude = car1_coordinates[-1]["longitude"] + 0.001  # 示例：每次增加0.001
-        new_coordinate = {"latitude": new_latitude, "longitude": new_longitude}
-        car1_coordinates.append(new_coordinate)
-        socket_io.emit('from-server', {'carId': car_id, 'coordinates': [new_coordinate]})
+        socket_io.sleep(0.3)
+        data = {
+            'car1': car1[i],
+            'car2': car2[i]
+        }
+        socket_io.emit('from-server', data)
+        i += 1  
 
-# 定时生成新坐标的线程
-thread1 = threading.Thread(target=generate_coordinates, args=(1, 'car1'))  # 每1秒生成一次坐标
-thread2 = threading.Thread(target=generate_coordinates, args=(2, 'car2'))  # 每2秒生成一次坐标
-
-def start_threads():
-    thread1.start()
-    thread2.start()
-
+        
+    
+    
 @socket_io.on('connect')
 def handle_connect():
     print('new connection')
-    start_threads()
+    socket_io.start_background_task(send_data)
+
+@socket_io.on('to-server')
+def handle_to_server(arg):
+    print(f'new to-server event: {arg}')
+    socket_io.emit('from-server', send_data())
 
 @app.route('/')
 def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
+
     socket_io.run(app, port=50000, debug=True)
