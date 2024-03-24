@@ -2,7 +2,7 @@ import requests
 import time
 
 # 云服务器的URL
-url = 'http://3.22.119.196:5000/data'
+url = 'http://ip:5000/data'
 
 # 要发送的数据
 car1 = [
