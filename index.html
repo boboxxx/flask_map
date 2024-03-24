@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time GPS Tracking</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div id="map" style="height:1000px;"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([39.916611, 116.390748], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        var marker = L.marker([39.916611, 116.390748]).addTo(map);
+        var car = L.polyline([], {color: 'red'}).addTo(map);
+        var cleanupClient = Client(map, marker, car);
+
+
+
+function Client(map, marker, car) {
+    var socket = io('ws://localhost:50000');
+
+    socket.on('from-server', function (msg) {
+        var latlng = [msg.latitude, msg.longitude];
+
+        // 移除上一个标记点
+        map.removeLayer(marker);
+
+        // 标记新的坐标点
+        marker = L.marker(latlng).addTo(map);
+
+        // 添加新的坐标点到车辆路径
+        car.addLatLng(latlng);
+        console.log(msg);
+    });
+
+    // 返回一个清理函数，用于断开socket连接
+    return function cleanup() {
+        socket.disconnect();
+    };
+}
+
+
+
+    function trackCar(map, marker, latlng, polyline){
+        
+        var marker = L.marker(latlng).addTo(map);
+        marker = L.marker(latlng).addTo(map);
+        map.removeLayer(marker);
+
+        polyline.addLatLng(latlng);
+    }
+//     trackCar(map, marker, latlngs, car);
+// function trackCar(map, marker, latlngs, polyline) {
+//         var index = 0;
+//         var marker = L.marker(latlngs[index]).addTo(map);
+    
+//         var interval = setInterval(function() {
+//             index++;
+//             if (index < latlngs.length) {
+//                 map.removeLayer(marker);
+//                 marker = L.marker(latlngs[index]).addTo(map);
+                
+//                 polyline.addLatLng(latlngs[index]);
+//             } else {
+//                 clearInterval(interval); // 结束定时任务
+//             }
+//         }, 1000);
+// }
+        // var count = 0;
+        // var timer = setInterval(function() {
+        //     // 每隔一秒增加一个点
+        //     polyline.addLatLng(latlngs[count]);
+        //     count++;
+
+        //     // 延长画线
+        //     polyline.redraw();
+        // }, 100);
+
+    </script>
+</body>
+</html>
