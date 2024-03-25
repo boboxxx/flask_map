@@ -1,10 +1,22 @@
-setInterval(function() {
-    fetch('/gps-data')
-        .then(response => response.json())
-        .then(data => {
-            // 在这里处理GPS数据，例如更新地图标记
-            console.log('Latitude:', data.latitude);
-            console.log('Longitude:', data.longitude);
-        });
-}, 1000); 
+var cleanupClient = Client();
 
+
+function Client() {
+    var socket = io('ws://localhost:5000');
+
+    socket.on('from-server', function (msg) {
+        // var latlng = [msg.latitude, msg.longitude];
+
+        // map.removeLayer(marker);
+
+        // marker = L.marker(latlng).addTo(map);
+
+        // car.addLatLng(latlng);
+        console.log(msg);
+    });
+
+    return function cleanup() {
+        socket.disconnect();
+        console.log('Disconnected');
+    };
+}
