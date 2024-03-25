@@ -2,7 +2,7 @@ import requests
 import time
 
 # 云服务器的URL
-url = 'http://ip:5000/data'
+url = 'http://3.22.119.196:5000/data'
 
 # 要发送的数据
 car1 = [
@@ -19,11 +19,16 @@ car1 = [
     {"latitude": 39.947263, "longitude": 116.366892},
     {"latitude": 39.947568, "longitude": 116.387537}
   ]
+cnt = 0 
+
 # 每秒发送car1的一组数据
-for data in car1:
-    response = requests.post(url, json=data)
+while True:
+    if cnt >= len(car1):
+        cnt = 0
+    response = requests.post(url, json=car1[cnt])
     # 打印响应内容
     print(response.text)
     time.sleep(1)
+    cnt += 1
 
 
