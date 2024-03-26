@@ -1,22 +1,75 @@
-var cleanupClient = Client();
+// var data = {'car1':  [
+//     {"latitude": 39.898457, "longitude": 116.391844, "flag":1},
+//     {"latitude": 39.898595, "longitude": 116.377947, "flag":0},
+//     {"latitude": 39.898341, "longitude": 116.368001, "flag":1},
+//     {"latitude": 39.898063, "longitude": 116.357144, "flag":0},
+//     {"latitude": 39.899095, "longitude": 116.351934, "flag":0},
+//     {"latitude": 39.905871, "longitude": 116.35067, "flag":0},
+//     {"latitude": 39.922329, "longitude": 116.3498, "flag":1}
+// ],
+
+// 'car2':[
+//     {"latitude": 39.931017, "longitude": 116.349671, "flag": 0},
+//     {"latitude": 39.939104, "longitude": 116.349225, "flag": 0},
+//     {"latitude": 39.942233, "longitude": 116.34991, "flag": 0},
+//     {"latitude": 39.947263, "longitude": 116.366892, "flag": 0},
+//     {"latitude": 39.947568, "longitude": 116.387537, "flag": 1}
+//   ]
+// }
+var map = L.map('map').setView([39.898457, 116.391844], 13); // 设置地图的初始视图
+
+// // 添加一个 OpenStreetMap 图层
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+// 定义行驶轨迹路线
+var route1 = L.polyline([]).addTo(map);
+var route2 = L.polyline([]).addTo(map);
 
 
-function Client() {
-    var socket = io('ws://localhost:5000');
-
-    socket.on('from-server', function (msg) {
-        // var latlng = [msg.latitude, msg.longitude];
-
-        // map.removeLayer(marker);
-
-        // marker = L.marker(latlng).addTo(map);
-
-        // car.addLatLng(latlng);
-        console.log(msg);
-    });
-
-    return function cleanup() {
-        socket.disconnect();
-        console.log('Disconnected');
-    };
+var car1 = null;
+var car2 = null;
+var car1Popup = L.popup().setContent('Car 1');
+var car2Popup = L.popup().setContent('Car 2');
+function setCar(data) {
+    console.log(data);
+    if (!data) {
+        return;
+    } else {
+        if (car1 !== null) {
+            map.removeLayer(car1);
+        }
+        if (car2 !== null) {
+            map.removeLayer(car2);
+        }
+        if ('car1' in data && 'car2' in data) {
+            car1 = L.marker([data.car1.latitude, data.car1.longitude]).addTo(map);
+            car1.bindPopup(car1Popup).openPopup();
+            route1.addLatLng([data.car1.latitude, data.car1.longitude]);
+            car2 = L.marker([data.car2.latitude, data.car2.longitude]).addTo(map);
+            car2.bindPopup(car2Popup).openPopup();
+            route2.addLatLng([data.car2.latitude, data.car2.longitude]);
+        }
+        else if ('car1' in data) {
+            car1 = L.marker([data.car1.latitude, data.car1.longitude]).addTo(map);
+            car1.bindPopup(car1Popup).openPopup();
+            route1.addLatLng([data.car1.latitude, data.car1.longitude]);
+        } 
+        else if ('car2' in data) {
+            car2 = L.marker([data.car2.latitude, data.car2.longitude]).addTo(map);
+            car2.bindPopup(car2Popup).openPopup();
+            route2.addLatLng([data.car2.latitude, data.car2.longitude]);
+        } 
+        else {
+            console.log("error: no car data found.");
+        }
+    }
 }
+
+setInterval(function() {
+    fetch('/data')
+        .then(response => response.json())
+        .then(data => {
+            setCar(data);
+        });
+}, 1000); // 每秒请求一次数据
