@@ -3,14 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-time GPS Tracking</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <title>Real-time GPS Data</title>
+    <!-- 引入 Leaflet 的 CSS 文件 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 900px;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <div id="map" style="height: 500px;"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <!-- 导入static中的js文件 -->
-    <script src="{{ url_for('static', filename='index.js') }}"></script>
+    <!-- 创建一个地图容器 -->
+    <div id="map"></div>
+
+    <!-- 引入 Leaflet 的 JavaScript 文件 -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+
+
+    <script src="../static/index.js"></script>
+    <!-- <script>
+        var map = L.map('map').setView([0, 0], 3); // 设置地图的初始视图
+
+        // 添加一个 OpenStreetMap 图层
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var car1 = null; // 用于存储地图上的标记
+        var car2 = null; // 用于存储地图上的标记
+
+        setInterval(function() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    // 移除上一个点的标记
+                    isNull(car1);
+                    isNull(car2);
+                    setCar(data);
+                    // // 在地图上添加新的标记
+                    // car1 = L.car1([data.latitude, data.longitude]).addTo(map);
+                    // map.setView([data.latitude, data.longitude], 14);
+                });
+        }, 1000); // 每1秒请求一次数据
+
+
+    function setCar(data){ {
+        if(Object.keys(data) == "car1"){
+            // 在地图上添加新的标记
+            car1 = L.car1([data.latitude, data.longitude]).addTo(map);
+            map.setView([data.latitude, data.longitude], 14);
+        }
+        else if(Object.keys(data) == "car2"){
+            // 在地图上添加新的标记
+            car2 = L.car2([data.latitude, data.longitude]).addTo(map);
+            map.setView([data.latitude, data.longitude], 14);
+        }
+                       
+        }
+    }
+        function isNull(car) {
+                      if (car !== null) {
+                          map.removeLayer(car);
+                      }
+              }
+    </script> -->
 </body>
 </html>
