@@ -23,6 +23,7 @@ def is_north_or_east(data):
 
 def run(data):
     coordinates_and_time = {}
+    print(type(data))
     gps_data = list(data.values())[0]
     carNumber = list(data.keys())[0]
     time_utc, latitude, longitude, lat_flag, lng_flag = extract_data(gps_data)
