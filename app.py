@@ -16,6 +16,8 @@ carSpeed = []
 def receive_data():
     global carData, carSpeed
     receive_data = request.get_json()
+    print('receive_data:', receive_data)
+    print("type receive_data:", type(receive_data))
     send_data = run(receive_data)
     # keys_string = ", ".join(data.keys())    
     # if carData:
