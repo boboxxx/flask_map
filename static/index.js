@@ -18,10 +18,39 @@
 // }
 var map = L.map('map').setView([39.898457, 116.391844], 13); // 设置地图的初始视图
 
-// // 添加一个 OpenStreetMap 图层
+// 添加一个 OpenStreetMap 图层
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
+
+var socket = io.connect();
+var cars = {};
+
+socket.on('device_data', function(data) {
+    console.log(data);
+    setCar(data);
+});
+
+function setCar(data) {
+    if (!data) {
+        return;
+    }
+    var carNumber = Object.keys(data)[0];
+    var carPosition = data[carNumber];
+    if (!(carNumber in cars)) {
+        // 如果车辆对象不存在，则创建新的车辆对象，然后创建标记和路径
+        cars[carNumber] = {};
+        cars[carNumber]['marker'] = L.animatedMarker([
+            [carPosition.latitude, carPosition.longitude],
+        ]).addTo(map);
+        map.setView([carPosition.latitude, carPosition.longitude], 13);
+    } else {
+        // 如果车辆对象已存在，则更新标记的位置
+        cars[carNumber]['marker'].setLatLng([carPosition.latitude, carPosition.longitude]);
+        map.setView([carPosition.latitude, carPosition.longitude], 16);
+    }
+}
+
 // 定义行驶轨迹路线
 // var route1 = L.polyline([]).addTo(map);
 // var route2 = L.polyline([]).addTo(map);
@@ -73,46 +102,3 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 //             setCar(data);
 //         });
 // }, 1000); // 每秒请求一次数据
-var socket = io.connect();
-var cars = {};
-
-socket.on('device_data', function(data) {
-    console.log(data);
-    setCar(data);
-
-});
-
-function setCar(data){
-
-    if(!data){
-        return;
-    }
-    // if (car !== null) {
-    //     map.removeLayer(car);
-    // }
-    var carNumber = Object.keys(data)[0];
-    var carPosition = data[carNumber];
-    // 判断车辆编号是否存在于车辆对象中
-    if (!(carNumber in cars)) {
-        // 如果不存在，则创建一个新的车辆对象，再判断是否存在标记点，如果不存在则创建标记点
-        cars[carNumber] = {};
-        cars[carNumber]['marker'] = L.marker([carPosition.latitude, carPosition.longitude]).addTo(map);
-        cars[carNumber]['route'] = L.polyline([], {color: 'red'}).addTo(map);
-        cars[carNumber]['route'].addLatLng([carPosition.latitude, carPosition.longitude]);
-
-        
-    }
-    else{
-        // 如果存在，则先删除上一个标记点，再重新标记更新车辆位置
-        
-        if(cars[carNumber]['marker']){
-            cars[carNumber]['marker'].remove();
-        }
-        cars[carNumber]['marker'] = L.marker([carPosition.latitude, carPosition.longitude]).addTo(map);
-        cars[carNumber]['route'].addLatLng([carPosition.latitude, carPosition.longitude]);
-
-    }
-
-
-
-}
