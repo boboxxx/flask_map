@@ -16,7 +16,7 @@
 //     {"latitude": 39.947568, "longitude": 116.387537, "flag": 1}
 //   ]
 // }
-var map = L.map('map').setView([39.898457, 116.391844], 13); // 设置地图的初始视图
+var map = L.map('map').setView(); // 设置地图的初始视图
 
 // 添加一个 OpenStreetMap 图层
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
