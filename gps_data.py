@@ -8,6 +8,7 @@ def ddmmToDd(ddmm):
 
 def extract_data(data):
     parts = data.split(',')
+    print("parts:", parts)
     try:
         time_utc = parts[1]
         
