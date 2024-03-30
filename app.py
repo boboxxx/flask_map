@@ -16,9 +16,12 @@ carSpeed = []
 def receive_data():
     global carData, carSpeed
     receive_data = request.get_json()
-    print('receive_data:', receive_data)
-    print("type receive_data:", type(receive_data))
-    send_data = run(receive_data)
+    if receive_data:
+        send_data = run(receive_data)
+        socketio.emit('device_data', send_data)
+        return 'Data received and sent to clients'
+    else:
+        return 'Data is null'
     # keys_string = ", ".join(data.keys())    
     # if carData:
         
@@ -28,8 +31,8 @@ def receive_data():
     #     carData.append(data)
     # 把data加入carData
     # 将数据通过 WebSocket 发送给 HTML 页面
-    socketio.emit('device_data', send_data)
-    return 'Data received and sent to clients'
+    # socketio.emit('device_data', send_data)
+    # return 'Data received and sent to clients'
 
 # HTML 页面
 @app.route('/')
