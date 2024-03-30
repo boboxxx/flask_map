@@ -43,11 +43,11 @@ function setCar(data) {
         cars[carNumber]['marker'] = L.animatedMarker([
             [carPosition.latitude, carPosition.longitude],
         ]).addTo(map);
-        map.setView([carPosition.latitude, carPosition.longitude], 13);
+        map.setView([carPosition.latitude, carPosition.longitude], 18);
     } else {
         // 如果车辆对象已存在，则更新标记的位置
         cars[carNumber]['marker'].setLatLng([carPosition.latitude, carPosition.longitude]);
-        map.setView([carPosition.latitude, carPosition.longitude], 16);
+        map.setView([carPosition.latitude, carPosition.longitude], 18);
     }
 }
 
