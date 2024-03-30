@@ -1,5 +1,6 @@
 def ddmmToDd(ddmm):
     # ddmm = float(ddmm)  # 先将字符串转换为浮点数
+    print("ddmm:", ddmm)
     degrees = int(ddmm / 100)  # 取整数部分作为度数  
     minutes = ddmm % 100       # 取余数作为分
     dd = degrees + minutes / 60  # 转换为十进制度格式
