@@ -16,7 +16,7 @@
 //     {"latitude": 39.947568, "longitude": 116.387537, "flag": 1}
 //   ]
 // }
-var map = L.map('map').setView(); // 设置地图的初始视图
+var map = L.map('map').setView([39.898457, 116.391844], 20); // 设置地图的初始视图
 
 // 添加一个 OpenStreetMap 图层
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -43,11 +43,11 @@ function setCar(data) {
         cars[carNumber]['marker'] = L.animatedMarker([
             [carPosition.latitude, carPosition.longitude],
         ]).addTo(map);
-        map.setView([carPosition.latitude, carPosition.longitude], 18);
+        map.setView([carPosition.latitude, carPosition.longitude], 20);
     } else {
         // 如果车辆对象已存在，则更新标记的位置
         cars[carNumber]['marker'].setLatLng([carPosition.latitude, carPosition.longitude]);
-        map.setView([carPosition.latitude, carPosition.longitude], 18);
+        map.setView([carPosition.latitude, carPosition.longitude], 20);
     }
 }
 
