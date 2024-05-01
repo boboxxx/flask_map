@@ -45,11 +45,11 @@ function setCar(data) {
         ]).addTo(map);
         //popup 车辆的信息
         cars[carNumber]['marker'].Popup(carNumber);
-        map.setView([carPosition.latitude, carPosition.longitude], 20);
+        //map.setView([carPosition.latitude, carPosition.longitude], 20);
     } else {
         // 如果车辆对象已存在，则更新标记的位置
         cars[carNumber]['marker'].setLatLng([carPosition.latitude, carPosition.longitude]);
-        map.setView([carPosition.latitude, carPosition.longitude], 20);
+       // map.setView([carPosition.latitude, carPosition.longitude], 20);
     }
 }
 
