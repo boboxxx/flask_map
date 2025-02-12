@@ -1,0 +1,12 @@
+/* ...existing code... */
+#map-container {
+    position: relative;
+    margin-left: 400px; /* 与侧边栏宽度相同 */
+    transition: margin-left 0.3s;
+}
+
+#sidebar.hidden ~ #map-container {
+    margin-left: 0;
+    width: 100%;
+}
+/* ...existing code... */
