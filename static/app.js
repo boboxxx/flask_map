@@ -26,4 +26,3 @@ function Client(map, marker, car) {
         console.log('Disconnected');
     };
 }
-

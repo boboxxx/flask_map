@@ -4,14 +4,14 @@ from flask_socketio import SocketIO
 from gps_data import *
 
 app = Flask(__name__)
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
-# 设置跨域
+# Set up CORS
 CORS(app, supports_credentials=True)
 
 carData = []
 carSpeed = []
-# 路由，接收从嵌入式设备发送过来的数据
+# Route to receive data from embedded devices
 @app.route('/data', methods=['POST'])
 def receive_data():
     global carData, carSpeed
@@ -22,24 +22,13 @@ def receive_data():
         return 'Data received and sent to clients'
     else:
         return 'Data is null'
-    # keys_string = ", ".join(data.keys())    
-    # if carData:
-        
-    # else:
-    #     addTime(data)
-    #     data[keys_string]['flag'] = 0
-    #     carData.append(data)
-    # 把data加入carData
-    # 将数据通过 WebSocket 发送给 HTML 页面
-    # socketio.emit('device_data', send_data)
-    # return 'Data received and sent to clients'
 
-# HTML 页面
+# HTML page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# WebSocket 事件处理器
+# WebSocket event handler
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
@@ -49,4 +38,4 @@ def handle_disconnect():
     print('Client disconnected')
 
 if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=5002, debug=True)
