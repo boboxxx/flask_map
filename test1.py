@@ -23,16 +23,20 @@ def parse_nmea_sentence(sentence: str) -> Tuple[Optional[float], Optional[float]
         Tuple[Optional[float], Optional[float]]: 返回(纬度, 经度)元组，解析失败时返回(None, None)
     """
     try:
-        sentence = sentence.strip()
-        if not sentence:
-            logging.error("收到空的NMEA语句")
+        # 分割多条NMEA语句，找到完整的那一条
+        sentences = sentence.split('$')
+        complete_sentence = None
+        for s in sentences:
+            if s and s.startswith('GPGGA') and len(s.split(',')) >= 15:
+                complete_sentence = '$' + s
+                break
+        
+        if not complete_sentence:
+            logging.error("未找到完整的NMEA语句")
             return None, None
 
-        parts = sentence.split(',')
-        if len(parts) < 6:
-            logging.error(f"NMEA语句格式错误: {sentence}")
-            return None, None
-
+        parts = complete_sentence.split(',')
+        
         # 提取经纬度信息
         lat_str, lat_dir = parts[2], parts[3]
         lon_str, lon_dir = parts[4], parts[5]
@@ -68,6 +72,7 @@ def parse_nmea_sentence(sentence: str) -> Tuple[Optional[float], Optional[float]
             if lon_dir == 'W':
                 longitude = -longitude
 
+            logging.info(f"成功解析GPS数据: 纬度={latitude}, 经度={longitude}")
             return latitude, longitude
 
         except ValueError as e:
@@ -109,14 +114,15 @@ def main():
     mem_size = 4096
 
     try:
-        memory = sysv_ipc.SharedMemory(key, flags=sysv_ipc.IPC_CREAT, size=mem_size)
-        logging.info("成功初始化共享内存")
+        # memory = sysv_ipc.SharedMemory(key, flags=sysv_ipc.IPC_CREAT, size=mem_size)
+        # logging.info("成功初始化共享内存")
 
         while True:
             try:
-                memory_value = memory.read()
-                memory_value = memory_value.rstrip(b'\x00')
-                decoded_value = memory_value.decode('utf-8')
+                # memory_value = memory.read()
+                # memory_value = memory_value.rstrip(b'\x00')
+                # decoded_value = memory_value.decode('utf-8')
+                decoded_value = '5.1853,W,1,15,1.83,85.57,M,45.444,M,,*40$GPGGA,175252.60,5051.9864,N,00005.1854,W,1,15,1.83,85.46,M,45.444,M,,*45$GPGGA,175'
 
                 lat, lon = parse_nmea_sentence(decoded_value)
                 if lat is not None and lon is not None:
@@ -128,7 +134,7 @@ def main():
                             "longitude": lon
                         }
                     }
-                    send_gps_data(flask_url, data)
+                    # send_gps_data(flask_url, data)
                 time.sleep(0.5)
 
             except UnicodeDecodeError as e:

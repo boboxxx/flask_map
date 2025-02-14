@@ -44,7 +44,7 @@ def run(data):
     return coordinates_and_time
 
 if __name__=='__main__':
-    data =  {'car1': '$GPGGA,142249.40,5052.0980,N,00005.1207,W,1,08,18.65,116.36,M,45.442,M,,*42'}
+    data =  {'car1': '$GPGGA,165527.00,5051.9853,N,00005.1888,W,1,15,1.83,83.50,M,45.444,M,,*43$GPGGA,165527.'}
 
     res = run(data)
     print(res)

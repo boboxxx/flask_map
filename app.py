@@ -17,8 +17,10 @@ def receive_data():
     global carData, carSpeed
     receive_data = request.get_json()
     if receive_data:
-        send_data = run(receive_data)
-        socketio.emit('device_data', send_data)
+        print(receive_data)
+        # send_data = run(receive_data)
+        socketio.emit('device_data', receive_data)
+
         return 'Data received and sent to clients'
     else:
         return 'Data is null'
