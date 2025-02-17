@@ -33,6 +33,7 @@ socket.on('device_data', function(data) {
     console.log(data);
     setCar(data);
     updateVehicleList(data);
+    checkVehicleDistance(); // 添加距离检查
 });
 
 // 更新车辆列表
@@ -216,3 +217,77 @@ function getRandomColor() {
 //             setCar(data);
 //         });
 // }, 1000); // 每秒请求一次数据
+
+// 计算两点之间的距离（使用Haversine公式）
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    // 检查输入坐标的有效性
+    if (Math.abs(lat1) > 90 || Math.abs(lat2) > 90 || Math.abs(lon1) > 180 || Math.abs(lon2) > 180) {
+        console.error('无效的经纬度坐标');
+        return Infinity;
+    }
+
+    // 检查是否为相同坐标
+    if (lat1 === lat2 && lon1 === lon2) {
+        return 0;
+    }
+
+    const R = 6371000; // 地球半径（米）
+    const φ1 = lat1 * Math.PI/180;
+    const φ2 = lat2 * Math.PI/180;
+    const Δφ = (lat2-lat1) * Math.PI/180;
+    const Δλ = (lon2-lon1) * Math.PI/180;
+
+    // 使用改进的Haversine公式
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    
+    // 防止数值计算误差导致的问题
+    if (a > 1) {
+        console.warn('距离计算出现数值误差，已修正');
+        return R * Math.PI;
+    }
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+
+    // 检查计算结果的合理性
+    if (isNaN(distance) || distance < 0) {
+        console.error('距离计算结果无效');
+        return Infinity;
+    }
+
+    return distance; // 返回距离（米）
+}
+
+// 检查车辆之间的距离
+let lastAlertTime = {}; // 存储每对车辆的上次弹窗时间
+
+function checkVehicleDistance() {
+    const carKeys = Object.keys(cars);
+    if (carKeys.length < 2) return; // 需要至少两辆车才能计算距离
+
+    const ALERT_INTERVAL = 30000; // 弹窗间隔时间（毫秒），设为30秒
+    const DISTANCE_THRESHOLD = 50; // 设置距离阈值为50米
+    const currentTime = Date.now();
+
+    for (let i = 0; i < carKeys.length; i++) {
+        for (let j = i + 1; j < carKeys.length; j++) {
+            const car1 = cars[carKeys[i]].marker.getLatLng();
+            const car2 = cars[carKeys[j]].marker.getLatLng();
+            
+            const distance = calculateDistance(car1.lat, car1.lng, car2.lat, car2.lng);
+            
+            // 只在距离有效且小于阈值时发出警告
+            if (distance !== Infinity && distance <= DISTANCE_THRESHOLD) {
+                const carPair = `${carKeys[i]}-${carKeys[j]}`;
+                const lastAlert = lastAlertTime[carPair] || 0;
+
+                if (currentTime - lastAlert >= ALERT_INTERVAL) {
+                    alert(`警告：${carKeys[i]}和${carKeys[j]}之间的距离为${distance.toFixed(2)}米，已低于安全距离${DISTANCE_THRESHOLD}米！`);
+                    lastAlertTime[carPair] = currentTime;
+                }
+            }
+        }
+    }
+}

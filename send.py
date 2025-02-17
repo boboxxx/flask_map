@@ -4,7 +4,7 @@ import threading
 from london_coordinates import get_oxford_street_coordinates
 
 # 服务器URL
-flask_server_url = "http://3.145.92.81:5002//data"
+flask_server_url = "http://localhost:5002//data"
 
 # 获取牛津街坐标点
 oxford_coordinates = get_oxford_street_coordinates()
