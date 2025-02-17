@@ -268,7 +268,7 @@ function checkVehicleDistance() {
     if (carKeys.length < 2) return; // 需要至少两辆车才能计算距离
 
     const ALERT_INTERVAL = 30000; // 弹窗间隔时间（毫秒），设为30秒
-    const DISTANCE_THRESHOLD = 50; // 设置距离阈值为50米
+    const DISTANCE_THRESHOLD = 5; // 设置距离阈值为5米
     const currentTime = Date.now();
 
     for (let i = 0; i < carKeys.length; i++) {
@@ -284,7 +284,7 @@ function checkVehicleDistance() {
                 const lastAlert = lastAlertTime[carPair] || 0;
 
                 if (currentTime - lastAlert >= ALERT_INTERVAL) {
-                    alert(`警告：${carKeys[i]}和${carKeys[j]}之间的距离为${distance.toFixed(2)}米，已低于安全距离${DISTANCE_THRESHOLD}米！`);
+                    alert(`Warning：The distance between ${carKeys[i]} and ${carKeys[j]} is already below 5 meters！`);
                     lastAlertTime[carPair] = currentTime;
                 }
             }
